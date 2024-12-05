@@ -143,7 +143,7 @@ function Appointment() {
                     onChange={(e) => setAppointment({ ...appointment, doctor: e.target.value })}
                   >
                     <option value="Choose you Consultant">
-                      Choose you Consultant
+                      Choose your Consultant
                     </option>
                     {doctors.map((doctors) => (
                       <option key={doctors._id} value={doctors.name}>
