@@ -38,7 +38,7 @@ function NurseAuth() {
     e.preventDefault();
     dispatch(loginProgress());
     axios
-      .post("https://hmsmern.onrender.com/auth/login", data)
+      .post("http://localhost:5173/auth/login", data)
       .then((res) => {
         if (res.data.role === "nurse") {
           const user = res.data.user;

@@ -21,7 +21,7 @@ function SignUp() {
       const handleSubmit = async (e) => {
         e.preventDefault();
         axios
-          .post("https://hmsmern.onrender.com/auth/register", data)
+          .post("http://localhost:5173/auth/register", data)
           .then((res) => {
             if (res.data.message === "Success") {
               navigate("/sign-in");

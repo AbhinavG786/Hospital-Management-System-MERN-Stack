@@ -33,7 +33,7 @@ function SignIn() {
     e.preventDefault();
     dispatch(loginProgress());
     axios
-      .post("https://hmsmern.onrender.com/auth/login", data)
+      .post("http://localhost:5173/auth/login", data)
       .then((res) => { 
   
         if (res.data.role === "patient") {
@@ -182,14 +182,14 @@ function SignIn() {
               className="relative inline-flex w-full items-center justify-center rounded-md border border-gray-400 bg-white px-3.5 py-2.5 font-semibold text-gray-700 transition-all duration-200 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black focus:outline-none"
               onClick={handleDoctor}
             >
-              SignIn As Doctor
+              Sign In As Doctor
             </button>
             <button
               type="button"
               className="relative inline-flex w-full items-center justify-center rounded-md border border-gray-400 bg-white px-3.5 py-2.5 font-semibold text-gray-700 transition-all duration-200 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black focus:outline-none"
               onClick={handleNurse}
             >
-              SignIn As Nurse
+              Sign In As Nurse
             </button>
           </div>
         </div>

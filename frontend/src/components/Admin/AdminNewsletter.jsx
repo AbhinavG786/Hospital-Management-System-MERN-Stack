@@ -12,7 +12,7 @@ function AdminNewsletter() {
   const fetchSentMessages = async () => {
     try {
       await axios.get(
-        "https://hmsmern.onrender.com/admin/get-sent-newsletter"
+        "http://localhost:5173/admin/get-sent-newsletter"
       )
       .then((res) =>{
         setSubscribers(res.data);

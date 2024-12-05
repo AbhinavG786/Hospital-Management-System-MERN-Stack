@@ -41,7 +41,7 @@ function UserProfile() {
     e.preventDefault();
     try {
       axios
-        .put("https://hmsmern.onrender.com/user/profile-update", {
+        .put("http://localhost:5173/user/profile-update", {
           userId: userData._id,
           updatedProfile: {
             email: email,
