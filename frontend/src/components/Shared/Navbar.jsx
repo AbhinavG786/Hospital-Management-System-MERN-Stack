@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom';
 
 function Navbar() {
@@ -42,7 +42,7 @@ function Navbar() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
-  const [sessionToken, setSessionToken] = useState('');
+  const [sessionId, setSessionId] = useState('');
   // const chatboxRef = useRef(null);
 
   // Function to create a chat session and get the session token
@@ -58,11 +58,26 @@ function Navbar() {
         //   userId: 'your-user-id', // You can pass user-specific data here
         // }),
       });
+     
+
 
       if (response.ok) {
         const data = await response.json();
-        setSessionToken(data.sessionToken); // Store session token
+         // Log the full response data to ensure it's correct
+      console.log('Full API Response:', data);
+        // if (data.session_id) {
+        //   setSessionId(data.session_id); // Store session token
+        //   console.log('Session Token Stored:', data.session_id);
+        if (Array.isArray(data) && data[0]?.session_id) {
+          setSessionId(data[0].session_id);  // Set sessionId state from index 0
+          console.log('Session ID set:', data[0].session_id);  // Log the session ID for debugging
+        } else {
+          console.error('Session token not found in response.');
+        }
+  
+        // setSessionToken(data.sessionToken); // Store session token
         setMessages([{ sender: 'system', text: 'Chat session started!' }]);
+        console.log('Session Token:', data[0].session_id); // Log the session token
       } else {
         console.error('Failed to create chat session');
       }
@@ -73,10 +88,17 @@ function Navbar() {
 
   // Function to handle sending a message to the chatbot
   const sendMessage = async () => {
-    if (message.trim() && sessionToken) {
-      // Add user message to chat
-      setMessages([...messages, { sender: 'user', text: message }]);
-      
+    console.log('sendMessage function triggered');  // Add this to check if the function is triggered
+    console.log('Message:', message);  // Log the message content
+console.log('Session Token:', sessionId);  // Log the session token to check if it's valid
+
+    if (message.trim() && sessionId) {
+      // Add user message to chat immediately
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { sender: 'user', text: message },
+      ]);
+  
       try {
         // API call to send chat message and get response
         const response = await fetch('http://127.0.0.1:8000/chat', {
@@ -85,14 +107,23 @@ function Navbar() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            sessionToken: sessionToken, // Use the session token from the first API call
             message: message,           // Send the user's message
+            sessionId: sessionId, // Use the session token from the first API call
           }),
         });
-
+      
+        
+        console.log(response);  // Log the response object to check the status
         if (response.ok) {
           const data = await response.json();
-          setMessages([...messages, { sender: 'user', text: message }, { sender: 'bot', text: data.response }]);
+          // console.log(data); 
+          // console.log(Object.keys(data));  // List all the keys in the response
+          // console.log('Bot Response:', data[0][0]); // Log the response
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            // { sender: 'user', text: message },
+            { sender: 'bot', text: data[0][0] },
+          ]);
           setMessage(''); // Clear input field
         } else {
           console.error('Failed to send message');
@@ -102,7 +133,18 @@ function Navbar() {
       }
     }
   };
-
+  useEffect(() => {
+    const chatContainer = document.querySelector('.overflow-y-auto');
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  }, [messages]);
+  // Monitor the sessionToken and trigger sendMessage when it's available
+  useEffect(() => {
+    if (sessionId) {
+      console.log('Session Token has been set:', sessionId); // Log the session token when it's updated
+    }
+  }, [sessionId]); // This hook will run whenever sessionToken changes
   const [isMobNav, setIsMobNav] = useState(false);
   const handleNav = () => {
     setIsMobNav(!isMobNav);
@@ -131,6 +173,13 @@ function Navbar() {
           {isChatOpen && (
         <div className="fixed bottom-5 right-5 w-96 h-[500px] bg-white shadow-lg rounded-lg border border-gray-300">
           <div className="flex flex-col h-full">
+            {/* Close Button */}
+      <button
+        onClick={() => setIsChatOpen(false)}
+        className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl"
+      >
+        &times;
+      </button>
             {/* Chat messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {messages.map((msg, index) => (
@@ -183,4 +232,5 @@ function Navbar() {
   )
 }
 
-export default Navbar
+export default Navbar;
+// export default ChatComponent;
